@@ -11,12 +11,10 @@ import java.io.IOException;
 import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.CipherKeyGenerator;
-import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.KeyGenerationParameters;
 import org.bouncycastle.crypto.engines.TwofishEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
-
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.util.encoders.Hex;
@@ -76,152 +74,100 @@ public class Simetrico {
 	
 	public void Cifrar(String ficheroClave, String ficheroCifrar, String ficheroCifrado) {
 	
-		String claveHexa;     // en string para poder leer del fichero
-		byte[] clave = null;  //necesario inicializarla, si no da error a la hora de usar el KeyParameter
-			
-		
-		try {
-			//CREACION DE LAS LECTURAS Y ESCRITURAS DE LOS FICHEROS
-			BufferedReader br = new BufferedReader (new FileReader(ficheroClave));
-			BufferedInputStream leerCifrar = new BufferedInputStream(new FileInputStream(ficheroCifrar));
-			BufferedOutputStream escribirCifrado = new BufferedOutputStream(new FileOutputStream(ficheroCifrado));
-			
-			PaddedBufferedBlockCipher cifrador = new PaddedBufferedBlockCipher(new CBCBlockCipher(new TwofishEngine()));
-			
-			claveHexa = br.readLine();
-			clave = Hex.decode(claveHexa);
-			
-			cifrador.init(true, new KeyParameter(clave));
-			
-			byte[] datosCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())];
-			byte[] datosLeidos = new byte[cifrador.getBlockSize()];
-			
-			int leidos = 0;
-			int cifrados = 0;
-			
-			leidos = leerCifrar.read(datosLeidos, 0, cifrador.getBlockSize());
-			
-			while(leidos > 0) {
-				
-				cifrados = cifrador.processBytes(datosLeidos, 0, leidos, datosCifrados, 0);
-				leidos = leerCifrar.read(datosLeidos, 0, cifrador.getBlockSize());
-				escribirCifrado.write(datosCifrados, 0, cifrados);
-			}
-			
-			cifrados = cifrador.doFinal(datosCifrados, 0);
-			escribirCifrado.write(datosCifrados, 0, cifrados);
-			
-			br.close();
-			leerCifrar.close();
-			escribirCifrado.close();
-			
-		} catch (IOException | InvalidCipherTextException e) {
-			e.printStackTrace();
-		}
-		
+        // Leer clave y decodificar de Hex a bin
+        String claveLeida;
+        byte[] claveBinario;
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(ficheroClave));
+            claveLeida = reader.readLine();
+            claveBinario = Hex.decode(claveLeida);
+
+            // Generar parámetros y cargar clave
+            KeyParameter params = new KeyParameter(claveBinario);
+
+            // Crear motor de cifrado
+            PaddedBufferedBlockCipher cifrador = new PaddedBufferedBlockCipher(new CBCBlockCipher(new TwofishEngine()));
+
+            // Iniciar motor de cifrado con params
+            cifrador.init(true,params);
+
+            // Ficheros y arrays de Datos
+            BufferedInputStream ficheroEntrada = new BufferedInputStream(new FileInputStream(ficheroCifrar));
+            BufferedOutputStream ficheroSalida = new BufferedOutputStream(new FileOutputStream(ficheroCifrado));
+
+            byte[] datosLeidos = new byte[cifrador.getBlockSize()];
+            byte[] datosCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())]; //Múltiplo del tamaño del bloque
+
+            int leidos;
+            int cifrados;
+
+            leidos = ficheroEntrada.read(datosLeidos,0,cifrador.getBlockSize());
+
+            while (leidos > 0) {
+                cifrados = cifrador.processBytes(datosLeidos, 0, leidos, datosCifrados, 0);
+                ficheroSalida.write(datosCifrados, 0, cifrados);
+                leidos = ficheroEntrada.read(datosLeidos, 0, cifrador.getBlockSize());
+            }
+
+            cifrados = cifrador.doFinal(datosCifrados,0);
+            ficheroSalida.write(datosCifrados,0,cifrados);
+
+            reader.close();
+            ficheroEntrada.close();
+            ficheroSalida.close();
+
+        } catch (IOException | InvalidCipherTextException e){
+            e.printStackTrace();
+        }
 	}
 	
 	public void Descifrar(String ficheroClave, String ficheroCifrado, String ficheroDescifrado) {
 		
-	    String claveHexa;     // en string para poder leer del fichero
-		byte[] clave = null;  //necesario inicializarla, si no da error a la hora de usar el KeyParameter
-		
+        // Leer clave y decodificar de Hex a bin
+        String claveLeida;
+        byte[] claveBinario;
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(ficheroClave));
+            claveLeida = reader.readLine();
+            claveBinario = Hex.decode(claveLeida);
 
-		
-		try {
-			
-			//CREACION DE LAS LECTURAS Y ESCRITURAS DE LOS FICHEROS
-			BufferedReader br = new BufferedReader (new FileReader(ficheroClave));
-			BufferedInputStream leerCifrado = new BufferedInputStream(new FileInputStream(ficheroCifrado));
-			BufferedOutputStream escribirDescifrado = new BufferedOutputStream(new FileOutputStream(ficheroDescifrado));
-		
-			
-			
-			PaddedBufferedBlockCipher descifrador = new PaddedBufferedBlockCipher(new CBCBlockCipher(new TwofishEngine()));
-			
+            // Generar parámetros y cargar clave
+            KeyParameter params = new KeyParameter(claveBinario);
 
-			
-			try {
-				claveHexa = br.readLine();
-				clave = Hex.decode(claveHexa);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			descifrador.init(false, new KeyParameter(clave));
-			
-			byte[] datosDescifrados = new byte[descifrador.getOutputSize(descifrador.getBlockSize())];
-			byte[] datosLeidos = new byte[descifrador.getBlockSize()];
-			
-			int descifrados = 0;
-			int leidos = 0;
-			
+            // Crear motor de cifrado
+            PaddedBufferedBlockCipher cifrador = new PaddedBufferedBlockCipher(new CBCBlockCipher(new TwofishEngine()));
 
-			try {
-				leidos = leerCifrado.read(datosLeidos, 0, descifrador.getBlockSize());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			while(leidos > 0) {
-				descifrados = descifrador.processBytes(datosLeidos, 0, leidos, datosDescifrados, 0);
-				try {
-					leidos = leerCifrado.read(datosLeidos, 0, descifrador.getBlockSize());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-				try {
-					escribirDescifrado.write(datosDescifrados, 0, descifrados);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			
-			try {
-				descifrados = descifrador.doFinal(datosDescifrados, 0);
-				try {
-					escribirDescifrado.write(datosDescifrados, 0, descifrados);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (DataLengthException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidCipherTextException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			try {
-				br.close();
-				leerCifrado.close();
-				escribirDescifrado.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            // Iniciar motor de cifrado con params
+            cifrador.init(false, params);
+
+            // Ficheros y arrays de Datos
+            BufferedInputStream ficheroEntrada = new BufferedInputStream(new FileInputStream(ficheroCifrado));
+            BufferedOutputStream ficheroSalida = new BufferedOutputStream(new FileOutputStream(ficheroDescifrado));
+
+            byte[] datosCifrados = new byte[cifrador.getBlockSize()];
+            byte[] datosDesCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())]; //Múltiplo del tamaño del bloque
+
+            int leidos;
+            int desCifrados;
+
+            leidos = ficheroEntrada.read(datosCifrados,0,cifrador.getBlockSize());
+
+            while (leidos > 0) {
+                desCifrados = cifrador.processBytes(datosCifrados, 0, leidos, datosDesCifrados, 0);
+                ficheroSalida.write(datosDesCifrados, 0, desCifrados);
+                leidos = ficheroEntrada.read(datosCifrados, 0, cifrador.getBlockSize());
+            }
+
+            desCifrados = cifrador.doFinal(datosCifrados,0);
+            ficheroSalida.write(datosCifrados,0,desCifrados);
+
+            reader.close();
+            ficheroEntrada.close();
+            ficheroSalida.close();
+
+        } catch (IOException | InvalidCipherTextException e){
+            e.printStackTrace();
+        }
 		
 	}
 	

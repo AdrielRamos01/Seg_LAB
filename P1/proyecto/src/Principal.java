@@ -63,7 +63,7 @@ public class Principal {
 								ficheroCifrado = sc.next();
 								System.out.println("Escriba el nombre del fichero para guardar cifrado");
 								String ficheroDescifrado = sc.next();
-								simetrico.Cifrar(ficheroClave, ficheroCifrado, ficheroDescifrado);
+								simetrico.Descifrar(ficheroClave, ficheroCifrado, ficheroDescifrado);
 							break;
 						}
 					} while(menu2 != 0);
