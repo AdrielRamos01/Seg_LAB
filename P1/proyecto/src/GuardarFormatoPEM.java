@@ -1,4 +1,6 @@
-
+/*Clase dada por los profesores de la asignatura
+ * en la parte asimetrica nos ayudará a guardar las claves en el formato
+ * indicado (FormatoPEM), ya que es como realmente se trabajan*/
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
