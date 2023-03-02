@@ -1,16 +1,3 @@
 /bin/
 
-cifrado6.txt
-claro6.txt
-descifrado6.txt
-clave6.txt
-
-cifrado16.txt
-claro16.txt
-descifrado16.txt
-clave16.txt
-
-cifrado20.txt
-claro20.txt
-descifrado20.txt
-clave20.txt
+*.txt
