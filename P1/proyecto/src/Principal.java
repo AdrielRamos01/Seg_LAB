@@ -19,6 +19,7 @@ public class Principal {
 		
 		
 		Simetrico simetrico = new Simetrico();
+		Asimetrico asimetrico = new Asimetrico();
 		
 		
 		do {
@@ -82,6 +83,12 @@ public class Principal {
 						switch(menu2){
 							case 1:
 								/*completar acciones*/
+								System.out.println("Escriba el nombre del fichero donde esta la clave Publica");
+								String ficheroClavePublica = sc.next();
+								System.out.println("Escriba el nombre del fichero donde esta la clave Privada");
+								String ficheroClavePrivada = sc.next();
+								asimetrico.generarClaves(ficheroClavePublica, ficheroClavePrivada);
+								
 							break;
 							case 2:
 								/*completar acciones*/
