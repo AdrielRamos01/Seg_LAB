@@ -10,10 +10,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.digests.SHA3Digest;
 import org.bouncycastle.crypto.encodings.PKCS1Encoding;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
@@ -77,7 +80,7 @@ public class Asimetrico {
 	}
 	
 	
-	public void Cifrar (String tipo, String ficheroClave, String ficheroClaro, String ficheroCifrado) {
+	public void cifrar (String tipo, String ficheroClave, String ficheroClaro, String ficheroCifrado) {
 		
 	
 		//1. Leer el modulo y el exponente de la clave
@@ -178,6 +181,127 @@ public class Asimetrico {
 		}
 		
 		
+	}
+	
+	
+	public void firmar (String ficheroClave, String ficheroFirmar, String ficheroConFirma) {
+		//1. Instanciar la clase para generar el resumen
+		Digest resumen = new SHA3Digest();
+		
+		//2. Generar el resumen: los bloques de lectura son del mismo tamaño que el resumen
+		byte[] datosEntrada = new byte[resumen.getDigestSize()];
+		byte[] datosResumen = new byte[resumen.getDigestSize()];
+		
+		//Bucle de lectura de bloques del fichero:Método update (a partir de cada bloque leído va actualizando el resumen)
+		try {
+			BufferedInputStream entrada = new  BufferedInputStream(new FileInputStream(ficheroFirmar));
+			int leidos = entrada.read(datosEntrada);
+			
+			
+			while(leidos>0) {
+			resumen.update(datosEntrada, 0, datosEntrada.length);
+			leidos = entrada.read(datosEntrada);
+			}
+			
+			//Método doFinal (fuera del bucle. Genera resumen final)
+			resumen.doFinal(datosResumen, 0);
+			entrada.close();
+			
+			//Escribir el resumen en el fichero
+			BufferedOutputStream wrResumen = new BufferedOutputStream(new FileOutputStream("Hash.txt"));
+			wrResumen.write(datosResumen);
+			wrResumen.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        //3. Cifrar el fichero que contien el resumen
+		cifrar("privada", ficheroClave, "Hash.txt", ficheroConFirma);
+		
+		
+		
+	}
+	
+	
+	public boolean verificarFirma (String ficheroClave, String ficheroDatos, String ficheroFirmaCifrado) {
+		
+		boolean verificado = false;
+		
+		//********************VOLVEMOS A GENERAR UN HASH DEL TEXTO EN CLARO********************//
+		
+		//1. Instanciar la clase para generar el resumen
+				Digest resumen = new SHA3Digest();
+				
+				//2. Generar el resumen: los bloques de lectura son del mismo tamaño que el resumen
+				byte[] datosEntrada = new byte[resumen.getDigestSize()];
+				byte[] datosResumen = new byte[resumen.getDigestSize()];
+				
+				//Bucle de lectura de bloques del fichero:Método update (a partir de cada bloque leído va actualizando el resumen)
+				try {
+					BufferedInputStream entrada = new  BufferedInputStream(new FileInputStream(ficheroDatos));
+					int leidos = entrada.read(datosEntrada);
+					
+					
+					while(leidos>0) {
+					resumen.update(datosEntrada, 0, datosEntrada.length);
+					leidos = entrada.read(datosEntrada);
+					}
+					
+					//Método doFinal (fuera del bucle. Genera resumen final)
+					resumen.doFinal(datosResumen, 0);
+					entrada.close();
+					
+					//Escribir el resumen en el fichero
+					BufferedOutputStream wrResumen = new BufferedOutputStream(new FileOutputStream("HashVerificar.txt"));
+					wrResumen.write(datosResumen);
+					wrResumen.close();
+					
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		//**************FIN GENERACION DE NUEVO HASH DEL TEXTO CLARO*****************//
+		
+		
+		//DESCIFRAMOS EL HASH CIFRADO GENERADO EN FIRMAR
+		
+	    descifrar("publica", ficheroClave, ficheroFirmaCifrado, "HashDescifrado.txt");
+	    
+	    //PASAMOS EL HASHDESCIFRADO A UN BYTE[]
+	    BufferedInputStream rdDescifrado;
+	    try {
+			rdDescifrado = new  BufferedInputStream(new FileInputStream("HashDescifrado.txt"));
+			byte[] fich = rdDescifrado.readAllBytes();
+			
+			
+			if(Arrays.equals(datosResumen, fich)) {
+				verificado = true;
+			} else {
+				verificado = false;
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	     
+		
+		
+		
+		
+		return verificado;	
 	}
 	
 }
