@@ -103,7 +103,7 @@ public class Principal {
                                         String fEntrada = sc.next();
                                         System.out.println("Introduzca el nombre del fichero de salida (cifrado): ");
                                         String fSalida = sc.next();
-                                        asimetrico.Cifrar(tipoClave, fClave, fEntrada, fSalida);
+                                        asimetrico.cifrar(tipoClave, fClave, fEntrada, fSalida);
                                     } else {
                                         System.out.println("No se ha introducido un valor correcto");
                                     }
@@ -129,9 +129,29 @@ public class Principal {
 							break;
 							case 4:
 								/*completar acciones*/
+								System.out.println("Introduzca el nombre del fichero que tiene la clave privada: ");
+                                String fClave = sc.next();
+                                System.out.println("Introduzca el nombre del fichero que quiere firmar: ");
+                                String fFirmar = sc.next();
+                                System.out.println("Introduzca el nombre del fichero donde se guarda la firma: ");
+                                String fFirmado = sc.next();
+                                asimetrico.firmar(fClave, fFirmar, fFirmado);
 							break;
 							case 5:
 								/*completar acciones*/
+								System.out.println("Introduzca el nombre del fichero que tiene la clave publica: ");
+                                String fClavePub = sc.next();
+                                System.out.println("Introduzca el nombre del fichero claro: ");
+                                String fClaro = sc.next();
+                                System.out.println("Introduzca el nombre del fichero donde está el resumen cifrado: ");
+                                String fResumenCifrado = sc.next();
+                                boolean verificado = asimetrico.verificarFirma(fClavePub, fClaro, fResumenCifrado);
+                                
+                                if (verificado) {
+                                	System.out.println("Fichero verificado con exito ");
+                                } else {
+                                	System.out.println("Fichero no verificado ");
+                                }
 							break;
 						}
 					} while(menu2 != 0);
