@@ -48,7 +48,7 @@ public class Asimetrico {
 		//3. Inicializarlo. Generar el par de claves necesario
 		AsymmetricCipherKeyPair claves = generadorClaves.generateKeyPair();
 		
-		//sacamos por individual el publico y el priovado para guardarlo en formato PEM
+		//Sacamos por individual el publico y el priovado para guardarlo en formato PEM
 		AsymmetricKeyParameter publicaPEM = claves.getPublic();
 		AsymmetricKeyParameter privadaPEM = claves.getPrivate();
 		
@@ -100,6 +100,9 @@ public class Asimetrico {
 		
 	
 		//1. Leer el modulo y el exponente de la clave
+		/* El modulo se ha guardado en la primera linea y el exponente en la segunda
+		 * por lo que usamos dos readLine seguidos, EN ESE ORDEN
+		 */
 		BufferedReader rd;
 		try {
 			rd = new BufferedReader(new FileReader(ficheroClave));
@@ -107,7 +110,9 @@ public class Asimetrico {
 			BigInteger exponente = new BigInteger(Hex.decode(rd.readLine()));
 			
 			//2. Parámetros para el método init de cifrador o descifrador:
-			//el primer parametro se hace asi ya que la API indica que seria true si ciframos con privada y false con publica
+			/*el primer parametro se hace asi ya que la API indica que seria true si ciframos con privada y false con publica
+			 * por lo que con esa instruccion resolvemos el codigo para ambos casos
+			 */
 			RSAKeyParameters parametros = new RSAKeyParameters(tipo.equals("privada"), modulo, exponente);
 			
 			//3. Instanciar el cifrador e inicializar
