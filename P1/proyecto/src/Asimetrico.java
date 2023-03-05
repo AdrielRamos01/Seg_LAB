@@ -29,6 +29,12 @@ public class Asimetrico {
 
 	public Asimetrico() {}
 	
+	/**
+	  * @brief  Funcion que genera una oareja de claves, una publica y una privada para un cifrado asimetrico
+	  * @param  ficheroKPublica es el fichero donde se guardara la clave publica
+	  * 		ficheroKPrivada es el fichero donde se guardara la clave privada
+	  * @retval None
+	  */
 	
 	public void generarClaves(String ficheroKPublica, String ficheroKPrivada) {
 		
@@ -56,8 +62,8 @@ public class Asimetrico {
 			PrintWriter ficheroPrivada = new PrintWriter(new FileWriter(ficheroKPrivada));
 			PrintWriter ficheroPublica = new PrintWriter(new FileWriter(ficheroKPublica));
 			
-			RSAKeyParameters privada = (RSAKeyParameters) claves.getPublic();
-			RSAKeyParameters publica = (RSAKeyParameters) claves.getPrivate();
+			RSAKeyParameters privada = (RSAKeyParameters) claves.getPrivate();
+			RSAKeyParameters publica = (RSAKeyParameters) claves.getPublic();
 			
 			ficheroPrivada.println(new String (Hex.encode(privada.getModulus().toByteArray())));
 			ficheroPrivada.print(new String (Hex.encode(privada.getExponent().toByteArray())));
@@ -78,6 +84,16 @@ public class Asimetrico {
 		
 		
 	}
+	
+	/**
+	  * @brief  Funcion que cifra un fichero mediante RSA
+	  * @param  tipo indicará si queremos cifrar con la clave publica o con la privada
+	  * 		ficheroClave es el fichero donde se guardara la clave. Debe coincidir con el tipo indicado
+	  * 		Este control se realiza por el usuario, no por el programa.
+	  * 		ficheroClaro es el fichero que se quiere cifrar
+	  * 		ficheroCifrado es el fichero cifrado
+	  * @retval None
+	  */
 	
 	
 	public void cifrar (String tipo, String ficheroClave, String ficheroClaro, String ficheroCifrado) {
@@ -132,7 +148,17 @@ public class Asimetrico {
 	}
 	
 	
-	public void descifrar (String tipo, String ficheroClave, String ficheroClaro, String ficheroCifrado) {
+	/**
+	  * @brief  Funcion que descifra un fichero mediante RSA
+	  * @param  tipo indicará si queremos cifrar con la clave publica o con la privada
+	  * 		ficheroClave es el fichero donde se guardara la clave. Debe coincidir con el tipo indicado
+	  * 		Este control se realiza por el usuario, no por el programa.
+	  * 		ficheroCifrado es el fichero que se quiere descifrar
+	  * 		ficheroDescifrado es el fichero descifrado
+	  * @retval None
+	  */
+	
+	public void descifrar (String tipo, String ficheroClave, String ficheroCifrado, String ficheroDescifrado) {
 		
 		
 		//1. Leer el modulo y el exponente de la clave
@@ -152,8 +178,8 @@ public class Asimetrico {
 			cifrador.init(false, parametros);
 			
 			//4.Lectura de los bytes
-			BufferedInputStream entrada = new  BufferedInputStream(new FileInputStream(ficheroClaro));
-			BufferedOutputStream salida = new BufferedOutputStream(new FileOutputStream(ficheroCifrado));
+			BufferedInputStream entrada = new  BufferedInputStream(new FileInputStream(ficheroCifrado));
+			BufferedOutputStream salida = new BufferedOutputStream(new FileOutputStream(ficheroDescifrado));
 			byte[] datosClaros = new byte[cifrador.getInputBlockSize()];
 			byte[] datosCifrados = new byte[cifrador.getOutputBlockSize()];
 			
@@ -183,6 +209,14 @@ public class Asimetrico {
 		
 	}
 	
+	/**
+	  * @brief  Funcion que descifra un fichero mediante RSA
+	  * @param  ficheroClave es el fichero que almacena la clave para la firma. Debe ser la clave privada SIEMPRE.
+	  *         Este control se realizará por el usuario y no por el programa.
+	  *         ficheroFirmar es el fichero al que queremos aplicarle la firma
+	  * 		ficheroConFirma es el fichero de destino donde guardaremos el archivo firmado.
+	  * @retval None
+	  */
 	
 	public void firmar (String ficheroClave, String ficheroFirmar, String ficheroConFirma) {
 		//1. Instanciar la clase para generar el resumen
@@ -227,7 +261,14 @@ public class Asimetrico {
 		
 	}
 	
-	
+	/**
+	  * @brief  Funcion que verifica si la firma de los ficheros se ha realizado correctamente
+	  * @param  ficheroClave es el fichero que almacena la clave para la firma. Debe ser la clave privada SIEMPRE.
+	  *         Este control se realizará por el usuario y no por el programa.
+	  *         ficheroDatos es el fichero en claro del cual queremos comprobar la firma
+	  * 		ficheroFirmaCifrado es un fichero firmado el cual hemos generado mediante el metodo firmar
+	  * @retval verificado informa de si la firma se ha verificado o no con éxito
+	  */
 	public boolean verificarFirma (String ficheroClave, String ficheroDatos, String ficheroFirmaCifrado) {
 		
 		boolean verificado = false;
@@ -297,9 +338,6 @@ public class Asimetrico {
 			e.printStackTrace();
 		}
 	     
-		
-		
-		
 		
 		return verificado;	
 	}
