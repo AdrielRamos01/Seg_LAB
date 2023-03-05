@@ -22,6 +22,12 @@ import org.bouncycastle.util.encoders.Hex;
 public class Simetrico {
 
 	
+	
+	/**
+	  * @brief  Funcion para generar la clave de cifrado simetrico
+	  * @param  nombreFichero es el nombre del fichero en el que se guardará la clave. Es introducido por el usuario
+	  * @retval None
+	  */
 	public void generarClave(String nombreFichero) {
 		
 		//DONDE GUARDAR LA CLAVE GENERADA
@@ -71,6 +77,13 @@ public class Simetrico {
 			}
 	}
 	
+	/**
+	  * @brief  Funcion que cifra un archivo dado por el usuario mediante el cifrado Twofish
+	  * @param  ficheroClave es el fichero que contiene la clave para el cifrado
+	  * 		ficheroCifrar es el fichero en claro que se quiere cifrar
+	  * 		ficheroCifrado es el fichero en el que se almacena el mensaje una vez cifrado
+	  * @retval None
+	  */
 	
 	public void Cifrar(String ficheroClave, String ficheroCifrar, String ficheroCifrado) {
 	
@@ -120,6 +133,14 @@ public class Simetrico {
             e.printStackTrace();
         }
 	}
+	
+	/**
+	  * @brief  Funcion que descifra un archivo dado por el usuario mediante el cifrado Twofish
+	  * @param  ficheroClave es el fichero que contiene la clave para el cifrado
+	  * 		ficheroCifrado es el fichero cifrado que queremos descifrar
+	  * 		ficheroDescifrado es el fichero en el que se almacena el texto descifrado
+	  * @retval None
+	  */
 	
 	public void Descifrar(String ficheroClave, String ficheroCifrado, String ficheroDescifrado) {
 		
