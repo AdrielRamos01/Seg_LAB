@@ -112,14 +112,14 @@ public class Principal {
 							case 3:
 								/*completar acciones*/
 								do {
-                                    System.out.println("Indique con qué clave desea cifrar: privada o publica");
+                                    System.out.println("Indique con qué clave desea descifrar: privada o publica");
                                     tipoClave = sc.next();
                                     if (tipoClave.equals("privada") || tipoClave.equals("publica")) {
                                         System.out.println("Introduzca el nombre del fichero que tiene la clave: ");
                                         String fClave = sc.next();
-                                        System.out.println("Introduzca el nombre del fichero que se quiere cifrar: ");
+                                        System.out.println("Introduzca el nombre del fichero que se quiere descifrar: ");
                                         String fEntrada = sc.next();
-                                        System.out.println("Introduzca el nombre del fichero de salida (cifrado): ");
+                                        System.out.println("Introduzca el nombre del fichero de salida (descifrado): ");
                                         String fSalida = sc.next();
                                         asimetrico.descifrar(tipoClave, fClave, fEntrada, fSalida);
                                     } else {
