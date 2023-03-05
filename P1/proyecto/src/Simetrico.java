@@ -99,9 +99,15 @@ public class Simetrico {
             KeyParameter params = new KeyParameter(claveBinario);
 
             // Crear motor de cifrado
+            /* Como no le indicamos un segundo parámetro para el relleno estamos usando el constructor por defecto que
+             * usa en motor de relleno PCKS7. En caso de querer otro relleno habría que inicializarlo
+             */
             PaddedBufferedBlockCipher cifrador = new PaddedBufferedBlockCipher(new CBCBlockCipher(new TwofishEngine()));
 
-            // Iniciar motor de cifrado con params
+        
+            /* Para inicializar el cifrador ponemos el primer parametro en true si queremos cifrar, 
+             * false es para descifrar
+             */
             cifrador.init(true,params);
 
             // Ficheros y arrays de Datos
@@ -109,20 +115,30 @@ public class Simetrico {
             BufferedOutputStream ficheroSalida = new BufferedOutputStream(new FileOutputStream(ficheroCifrado));
 
             byte[] datosLeidos = new byte[cifrador.getBlockSize()];
-            byte[] datosCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())]; //Múltiplo del tamaño del bloque
+            byte[] datosCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())]; 
 
             int leidos;
             int cifrados;
 
+            /* Mediante el uso de un BufferedInputStream vamos a leer el fichero que queremos cifrar
+             * Esta clase está hecha para leer fichero por partes, por lo que hay que indicarle el tamaño
+             * Los parametros son: 1)array de datos a leer, 2) posicion inicial, 3) tamaño de cada bloque de lectura
+             */
             leidos = ficheroEntrada.read(datosLeidos,0,cifrador.getBlockSize());
 
             while (leidos > 0) {
+            	/* El processBytes tiene los siguientes parametros:
+            	 * array de entrada, offset de entrada, longitud de cifrado, salida, offset de salida 
+            	 */
                 cifrados = cifrador.processBytes(datosLeidos, 0, leidos, datosCifrados, 0);
                 ficheroSalida.write(datosCifrados, 0, cifrados);
                 leidos = ficheroEntrada.read(datosLeidos, 0, cifrador.getBlockSize());
             }
 
+            //Se cifra el ultimo bloque
             cifrados = cifrador.doFinal(datosCifrados,0);
+            
+            //Se escribe en la salida
             ficheroSalida.write(datosCifrados,0,cifrados);
 
             reader.close();
@@ -158,7 +174,7 @@ public class Simetrico {
             // Crear motor de cifrado
             PaddedBufferedBlockCipher cifrador = new PaddedBufferedBlockCipher(new CBCBlockCipher(new TwofishEngine()));
 
-            // Iniciar motor de cifrado con params
+            //En este caso el init va con false, porque queremos descifrar
             cifrador.init(false, params);
 
             // Ficheros y arrays de Datos
@@ -166,7 +182,7 @@ public class Simetrico {
             BufferedOutputStream ficheroSalida = new BufferedOutputStream(new FileOutputStream(ficheroDescifrado));
 
             byte[] datosCifrados = new byte[cifrador.getBlockSize()];
-            byte[] datosDesCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())]; //Múltiplo del tamaño del bloque
+            byte[] datosDesCifrados = new byte[cifrador.getOutputSize(cifrador.getBlockSize())]; 
 
             int leidos;
             int desCifrados;
