@@ -32,7 +32,7 @@ public class Asimetrico {
 	/**
 	  * @brief  Funcion que genera una oareja de claves, una publica y una privada para un cifrado asimetrico
 	  * @param  ficheroKPublica es el fichero donde se guardara la clave publica
-	  * 		ficheroKPrivada es el fichero donde se guardara la clave privada
+	  * @param  ficheroKPrivada es el fichero donde se guardara la clave privada
 	  * @retval None
 	  */
 	
@@ -88,10 +88,10 @@ public class Asimetrico {
 	/**
 	  * @brief  Funcion que cifra un fichero mediante RSA
 	  * @param  tipo indicará si queremos cifrar con la clave publica o con la privada
-	  * 		ficheroClave es el fichero donde se guardara la clave. Debe coincidir con el tipo indicado
-	  * 		Este control se realiza por el usuario, no por el programa.
-	  * 		ficheroClaro es el fichero que se quiere cifrar
-	  * 		ficheroCifrado es el fichero cifrado
+	  * @param  ficheroClave es el fichero donde se guardara la clave. Debe coincidir con el tipo indicado
+	  *         Este control se realiza por el usuario, no por el programa.
+	  * @param  ficheroClaro es el fichero que se quiere cifrar
+	  * @param  ficheroCifrado es el fichero cifrado
 	  * @retval None
 	  */
 	
@@ -156,10 +156,10 @@ public class Asimetrico {
 	/**
 	  * @brief  Funcion que descifra un fichero mediante RSA
 	  * @param  tipo indicará si queremos cifrar con la clave publica o con la privada
-	  * 		ficheroClave es el fichero donde se guardara la clave. Debe coincidir con el tipo indicado
-	  * 		Este control se realiza por el usuario, no por el programa.
-	  * 		ficheroCifrado es el fichero que se quiere descifrar
-	  * 		ficheroDescifrado es el fichero descifrado
+	  * @param  ficheroClave es el fichero donde se guardara la clave. Debe coincidir con el tipo indicado
+	  *         Este control se realiza por el usuario, no por el programa.
+	  * @param  ficheroCifrado es el fichero que se quiere descifrar
+	  * @param  ficheroDescifrado es el fichero descifrado
 	  * @retval None
 	  */
 	
@@ -218,8 +218,8 @@ public class Asimetrico {
 	  * @brief  Funcion que descifra un fichero mediante RSA
 	  * @param  ficheroClave es el fichero que almacena la clave para la firma. Debe ser la clave privada SIEMPRE.
 	  *         Este control se realizará por el usuario y no por el programa.
-	  *         ficheroFirmar es el fichero al que queremos aplicarle la firma
-	  * 		ficheroConFirma es el fichero de destino donde guardaremos el archivo firmado.
+	  * @param  ficheroFirmar es el fichero al que queremos aplicarle la firma
+	  * @param  ficheroConFirma es el fichero de destino donde guardaremos el archivo firmado.
 	  * @retval None
 	  */
 	
@@ -270,8 +270,8 @@ public class Asimetrico {
 	  * @brief  Funcion que verifica si la firma de los ficheros se ha realizado correctamente
 	  * @param  ficheroClave es el fichero que almacena la clave para la firma. Debe ser la clave privada SIEMPRE.
 	  *         Este control se realizará por el usuario y no por el programa.
-	  *         ficheroDatos es el fichero en claro del cual queremos comprobar la firma
-	  * 		ficheroFirmaCifrado es un fichero firmado el cual hemos generado mediante el metodo firmar
+	  * @param  ficheroDatos es el fichero en claro del cual queremos comprobar la firma
+	  * @param  ficheroFirmaCifrado es un fichero firmado el cual hemos generado mediante el metodo firmar
 	  * @retval verificado informa de si la firma se ha verificado o no con éxito
 	  */
 	public boolean verificarFirma (String ficheroClave, String ficheroDatos, String ficheroFirmaCifrado) {

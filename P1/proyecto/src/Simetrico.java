@@ -80,8 +80,8 @@ public class Simetrico {
 	/**
 	  * @brief  Funcion que cifra un archivo dado por el usuario mediante el cifrado Twofish
 	  * @param  ficheroClave es el fichero que contiene la clave para el cifrado
-	  * 		ficheroCifrar es el fichero en claro que se quiere cifrar
-	  * 		ficheroCifrado es el fichero en el que se almacena el mensaje una vez cifrado
+	  * @param  ficheroCifrar es el fichero en claro que se quiere cifrar
+	  * @param  ficheroCifrado es el fichero en el que se almacena el mensaje una vez cifrado
 	  * @retval None
 	  */
 	
@@ -153,8 +153,8 @@ public class Simetrico {
 	/**
 	  * @brief  Funcion que descifra un archivo dado por el usuario mediante el cifrado Twofish
 	  * @param  ficheroClave es el fichero que contiene la clave para el cifrado
-	  * 		ficheroCifrado es el fichero cifrado que queremos descifrar
-	  * 		ficheroDescifrado es el fichero en el que se almacena el texto descifrado
+	  * @param  ficheroCifrado es el fichero cifrado que queremos descifrar
+	  * @param  ficheroDescifrado es el fichero en el que se almacena el texto descifrado
 	  * @retval None
 	  */
 	
