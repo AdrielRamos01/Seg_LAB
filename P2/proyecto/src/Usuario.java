@@ -73,15 +73,24 @@ public class Usuario {
 	 * @throws OperatorCreationException 
 	 */
 	public void crearPetCertificado(String fichPeticion) throws OperatorCreationException, IOException {
-		// IMPLEMENTAR POR EL ESTUDIANTE
  
 	   	// Configurar hash para resumen y algoritmo firma (MIRAR DIAPOSITIVAS PRESENTACIÓN PRÁCTICA)
 		// La solicitud se firma con la clave privada del usuario y se escribe en fichPeticion en formato PEM
 		
-
-
-		// IMPLEMENTAR POR EL ESTUDIANTE
+		//EL usuario instancia un Objeto de la clase PKCS10CertificationRequestBuilder que contiene la información de la petición. (1)
+        PKCS10CertificationRequestBuilder requestBuilder = new BcPKCS10CertificationRequestBuilder(new X500Name("C=ES, O=DTE, CN=Adriel"), this.clavePublica);
 		
+		//Configura el resumen y la firma. Instancia un objeto de la clase BcContentSignerBuilder. (2)
+        DefaultSignatureAlgorithmIdentifierFinder sigAlgFinder = new DefaultSignatureAlgorithmIdentifierFinder();
+        DefaultDigestAlgorithmIdentifierFinder digAlgFinder = new DefaultDigestAlgorithmIdentifierFinder();
+        AlgorithmIdentifier sigAlgId = sigAlgFinder.find("SHA256withRSA");
+        AlgorithmIdentifier digAlgId = digAlgFinder.find(sigAlgId);
+        BcContentSignerBuilder csBuilder = new BcRSAContentSignerBuilder(sigAlgId, digAlgId);
+
+	    //Genera la petición y la firma con su clave privada. Instancia un objeto de la clase PKCS10CertificationRequest.(3)
+        PKCS10CertificationRequest pet = requestBuilder.build(csBuilder.build(this.clavePrivada));
+        byte [] petToByte = pet.getEncoded();
+        GestionObjetosPEM.escribirObjetoPEM("CERTIFICATE REQUEST",petToByte, fichPeticion);
 	}
 	
 	
@@ -98,13 +107,11 @@ public class Usuario {
     public boolean verificarCertificadoExterno(String fichCertificadoCA, String fichCertificadoUsu)throws OperatorCreationException, CertException, FileNotFoundException, IOException {
 		return false;
 
-    // IMPLEMENTAR POR EL ESTUDIANTE
 	// Comprobar fecha validez del certificado
 	// Si la fecha es válida, se comprueba la firma
 	// Generar un contenedor para la verificación con la clave pública de CA,
 	// el certificado del usuario tiene el resto de información
-    	
-   	// IMPLEMENTAR POR EL ESTUDIANTE
+    
   		
 	}	
 }
