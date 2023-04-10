@@ -2,7 +2,10 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
@@ -105,14 +108,47 @@ public class Usuario {
 	 * @return boolean: true si verificación OK, false en caso contrario.
 	 */
     public boolean verificarCertificadoExterno(String fichCertificadoCA, String fichCertificadoUsu)throws OperatorCreationException, CertException, FileNotFoundException, IOException {
-		return false;
-
-	// Comprobar fecha validez del certificado
-	// Si la fecha es válida, se comprueba la firma
-	// Generar un contenedor para la verificación con la clave pública de CA,
-	// el certificado del usuario tiene el resto de información
+		
+    	boolean certificadoVerificado = false;
+    	boolean fechaVerificada = false;
+    	RSAKeyParameters clavePublicaCA = null;
+    	
+    	//Leemos certificado y Comprobar fecha validez del certificado
+    	X509CertificateHolder certUsuario = (X509CertificateHolder) GestionObjetosPEM.leerObjetoPEM(fichCertificadoUsu);
+    	
+        Date NotBefore = certUsuario.getNotBefore();
+        Date notAfter = certUsuario.getNotAfter();
+        Calendar calendar = GregorianCalendar.getInstance();
+        Date now = calendar.getTime();
+        
+        if (!now.after(notAfter) && !now.before(NotBefore)){
+        	fechaVerificada = true;
+        	System.out.println("Fecha verificada");
+        } else {
+        	System.out.println("Fecha no verificada");
+        }
+    	
+    	// Si la fecha es válida, se comprueba la firma
+    	if(fechaVerificada) {
+    		//Leer fichCertificadoCA (certificado CA) 
+            X509CertificateHolder certCA = (X509CertificateHolder) GestionObjetosPEM.leerObjetoPEM(fichCertificadoCA);
+            GestionClaves gc = new GestionClaves();
+            clavePublicaCA = gc.getClavePublicaMotor(certCA.getSubjectPublicKeyInfo());
+            
+    		//Generar un contenedor para la verificación. 
+            DefaultDigestAlgorithmIdentifierFinder signer = new DefaultDigestAlgorithmIdentifierFinder();
+            ContentVerifierProvider contentVerifierProvider = new BcRSAContentVerifierProviderBuilder(signer).build(clavePublicaCA);
+            
+    		//Verificar firma
+            certificadoVerificado = certUsuario.isSignatureValid(contentVerifierProvider);
+            if(certificadoVerificado) {
+            	System.out.println("Certificado Verificado");
+            } else {
+            	System.out.println("Certificado No Verificado");
+            }
+    	}
     
-  		
+    	return certificadoVerificado;
 	}	
 }
 
