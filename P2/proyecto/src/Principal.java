@@ -7,8 +7,8 @@ public class Principal {
 	public static void main(String[] args) throws Exception {
 		// Se pueden tratar las exceptiones en lugar de implementar throws
 
-		Usuario u =new Usuario();
-		CA ca=new CA();
+		Usuario u = new Usuario();
+		CA ca = new CA();
 		
 		int menu1;
 		int menu2;
@@ -24,51 +24,35 @@ public class Principal {
 		String ficheroCertUsu=null;
 		
 		do {
-			// Ejemplo de uso de calendario, clases Date y Calendar
-			// Sólo para ver tiempo actual, cuál sería la fecha inicio certificado 
-			// y la de fin certificado
-			// Date fecha = new Date(System.currentTimeMillis());
-			// System.out.println("Fecha actual...:"+fecha.toString()); // Momento actual
-			
-			// Calendar c1 = GregorianCalendar.getInstance();
-			// Date fechaInicioCert=c1.getTime(); 
-			// Devuelve la Date actual. Mismo valor que fecha
-			// System.out.println("Fecha Inicio Certificado: "+fechaInicioCert.toString());
-			
-			// c1.add(Calendar.YEAR, 4); //añadir 4 años al calendario Para la CA.
-		    	// Date fechaFinCert=c1.getTime(); 
-			// cuatro años a partir del momento actual. 
-			// System.out.println("fecha Fin Certificado :"+fechaFinCert.toString());
-
-		  	System.out.println("¿Con qué rol desea trabajar?");
+		  	System.out.println("Â¿Con que rol desea trabajar?");
 			System.out.println("1. Trabajar como usuario.");
-			System.out.println("2. Trabajar como Autoridad de Certificación.");
+			System.out.println("2. Trabajar como Autoridad de Certificacion.");
 			System.out.println("3. Salir.");
 			menu1 = sc.nextInt();
 		
 			switch(menu1){
 				case 1:
 					do{
-						System.out.println("Elija una opción para trabajar como USUARIO:");
-						System.out.println("0. Volver al menú anterior.");
+						System.out.println("Elija una opcion para trabajar como USUARIO:");
+						System.out.println("0. Volver al menu anterior.");
 						System.out.println("1. Generar pareja de claves en formato PEM.");
-						System.out.println("2. Crear petición de certificación.");
+						System.out.println("2. Crear peticion de certificacion.");
 						System.out.println("3. Verificar certificado externo.");
 						menu2 = sc.nextInt();
 				
 						switch(menu2){
 							case 1://Generar pareja de claves.
-								System.out.println("OPCIÓN GENERA PAREJA DE CLAVES");
-								System.out.println("Escriba el nombre del fichero que contendrá la clave privada:");
+								System.out.println("OPCION GENERA PAREJA DE CLAVES");
+								System.out.println("Escriba el nombre del fichero que contendra la clave privada:");
 								ficheroClavePrivada = sc.next();
-								System.out.println("Escriba el nombre del fichero que contendrá la clave publica:");
+								System.out.println("Escriba el nombre del fichero que contendra la clave publica:");
 								ficheroClavePublica = sc.next();
 								u.generarClavesUsuario(ficheroClavePrivada, ficheroClavePublica);
 								
 								
 							break;
-							case 2://Crear petición de certificado.
-								System.out.println("Escriba nombre fichero para la petición de certificación:");
+							case 2://Crear peticion de certificado.
+								System.out.println("Escriba nombre fichero para la peticion de certificacion:");
 								fichero= sc.next();
 								//COMPLETAR POR EL ESTUDIANTE
 								u.crearPetCertificado(fichero);
@@ -82,8 +66,11 @@ public class Principal {
 							    	System.out.println("Escriba el nombre del fichero que contiene el certificado de la CA:");
 								ficheroCA = sc.next();
 								//COMPLETAR POR EL ESTUDIANTE 
-								u.verificarCertificadoExterno(ficheroCA, fichero);
-
+								if(u.verificarCertificadoExterno(ficheroCA, fichero)) {
+									System.out.println("Se ha verificado el certificado correctamente");
+								} else {
+									System.out.println("No se ha verificado el certificado");
+								}
 				        
 							break;
 						}
@@ -91,16 +78,16 @@ public class Principal {
 				break;
 				case 2:
 					do{
-						System.out.println("Elija una opción para trabajar como CA:");
-						System.out.println("0. Volver al menú anterior.");
+						System.out.println("Elija una opcion para trabajar como CA:");
+						System.out.println("0. Volver al menu anterior.");
 						System.out.println("1. Generar pareja de claves y certificado autofirmado.");
 						System.out.println("2. Cargar pareja de claves.");
-						System.out.println("3. Generar un certificado a partir de una petición.");
+						System.out.println("3. Generar un certificado a partir de una peticion.");
 						menu2 = sc.nextInt();
 						switch(menu2){
 							case 1:	//Generar pareja de claves, el certificado X509 y guardar en ficheros.
 								//COMPLETAR POR EL ESTUDIANTE   
-								ca.cargarClaves();
+								ca.generarClavesyCertificado();
 								System.out.println("Claves y certificados X509 GENERADOS");
 								System.out.println("Se han guardado en " + CA.NOMBRE_FICHERO_CRT + ", " + CA.NOMBRE_FICHERO_CLAVES + "-*.txt");									
 							break;
@@ -110,13 +97,17 @@ public class Principal {
 								System.out.println("Claves CARGADAS");
 								System.out.println("Se han cargado de " + CA.NOMBRE_FICHERO_CLAVES + "-*.txt");		
 							break;
-							case 3:// Generar certificado a partir de una petición
-								    System.out.println("Escriba el nombre del fichero que contiene la petición de certificación del usuario:");
+							case 3:// Generar certificado a partir de una peticion
+								    System.out.println("Escriba el nombre del fichero que contiene la peticion de certificacion del usuario:");
 								    fichero = sc.next();
-								    System.out.println("Escriba el nombre del fichero que contendrá el certificado emitido por la CA para el usuario:");
+								    System.out.println("Escriba el nombre del fichero que contendra el certificado emitido por la CA para el usuario:");
 								    ficheroCertUsu = sc.next();
 								    // A COMPLETAR ESTUDIANTE
-								    ca.certificarPeticion(fichero, ficheroCertUsu);
+								    if(ca.certificarPeticion(fichero, ficheroCertUsu)) {
+								    	System.out.println("Se ha generado el certificado de la peticion correctamente");
+								    } else {
+								    	System.out.println("No se ha generado el certificado de la peticion");
+								    }
 								    
 							break;							
 						}

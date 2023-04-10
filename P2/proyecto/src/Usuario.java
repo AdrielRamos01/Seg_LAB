@@ -28,7 +28,7 @@ import org.bouncycastle.pkcs.bc.BcPKCS10CertificationRequestBuilder;
 
 
 /**
-* Esta clase implementa el comportamiento de un usuario en una Infraestructura de Certificación
+* Esta clase implementa el comportamiento de un usuario en una Infraestructura de Certificacion
 * @author Seg Red Ser
 * @version 1.0
 */
@@ -39,9 +39,9 @@ public class Usuario {
 
 
 	/**
-	 * Método que genera las claves del usuario.
-	 * @param fichClavePrivada: String con el nombre del fichero donde se guardará la clave privada en formato PEM
-	 * @param fichClavePublica: String con el nombre del fichero donde se guardará la clave publica en formato PEM
+	 * Metodo que genera las claves del usuario.
+	 * @param fichClavePrivada: String con el nombre del fichero donde se guardara la clave privada en formato PEM
+	 * @param fichClavePublica: String con el nombre del fichero donde se guardara la clave publica en formato PEM
      * @throws IOException 	
 	
 	 */
@@ -56,7 +56,7 @@ public class Usuario {
 		clavePublica = (RSAKeyParameters) claves.getPublic();
 		clavePrivada = (RSAKeyParameters) claves.getPrivate();
 				
-		/*Ahora generamos las key con los formatos que se nos pide en la practica  (segun pdf 1ºparte formato ASN1)
+		/*Ahora generamos las key con los formatos que se nos pide en la practica  (segun pdf 1 parte formato ASN1)
 		 * y lo guardamos en array de bytes como en la P1*/
 		SubjectPublicKeyInfo publicInfo = gc.getClavePublicaSPKI(clavePublica);
 		PrivateKeyInfo privateInfo = gc.getClavePrivadaPKCS8(clavePrivada);
@@ -70,17 +70,17 @@ public class Usuario {
 
 	
 	/**
-	 * Método que genera una petición de certificado en formato PEM, almacenando esta petición en un fichero.
-	 * @param fichPeticion: String con el nombre del fichero donde se guardará la petición de certificado
+	 * Metodo que genera una peticion de certificado en formato PEM, almacenando esta peticion en un fichero.
+	 * @param fichPeticion: String con el nombre del fichero donde se guardara la peticion de certificado
 	 * @throws IOException 
 	 * @throws OperatorCreationException 
 	 */
 	public void crearPetCertificado(String fichPeticion) throws OperatorCreationException, IOException {
  
-	   	// Configurar hash para resumen y algoritmo firma (MIRAR DIAPOSITIVAS PRESENTACIÓN PRÁCTICA)
+	   	// Configurar hash para resumen y algoritmo firma (MIRAR DIAPOSITIVAS PRESENTACION PRACTICA)
 		// La solicitud se firma con la clave privada del usuario y se escribe en fichPeticion en formato PEM
 		
-		//EL usuario instancia un Objeto de la clase PKCS10CertificationRequestBuilder que contiene la información de la petición. (1)
+		//EL usuario instancia un Objeto de la clase PKCS10CertificationRequestBuilder que contiene la informacion de la peticion. (1)
         PKCS10CertificationRequestBuilder requestBuilder = new BcPKCS10CertificationRequestBuilder(new X500Name("C=ES, O=DTE, CN=Adriel"), this.clavePublica);
 		
 		//Configura el resumen y la firma. Instancia un objeto de la clase BcContentSignerBuilder. (2)
@@ -89,25 +89,27 @@ public class Usuario {
         AlgorithmIdentifier sigAlgId = sigAlgFinder.find("SHA256withRSA");
         AlgorithmIdentifier digAlgId = digAlgFinder.find(sigAlgId);
         BcContentSignerBuilder csBuilder = new BcRSAContentSignerBuilder(sigAlgId, digAlgId);
-
-	    //Genera la petición y la firma con su clave privada. Instancia un objeto de la clase PKCS10CertificationRequest.(3)
         PKCS10CertificationRequest pet = requestBuilder.build(csBuilder.build(this.clavePrivada));
+
         byte [] petToByte = pet.getEncoded();
+        //guardamos el fichero de la peticion en formato PEM
         GestionObjetosPEM.escribirObjetoPEM("CERTIFICATE REQUEST",petToByte, fichPeticion);
 	}
 	
 	
 	/**
-	 * Método que verifica un certificado de una entidad.
+	 * Metodo que verifica un certificado de una entidad.
 	 * @param fichCertificadoCA: String con el nombre del fichero donde se encuentra el certificado de la CA
 	 * @param fichCertificadoUsu: String con el nombre del fichero donde se encuentra el certificado de la entidad
      	 * @throws CertException 
 	 * @throws OperatorCreationException 
 	 * @throws IOException 
 	 * @throws FileNotFoundException 	
-	 * @return boolean: true si verificación OK, false en caso contrario.
+	 * @return boolean: true si verificacion OK, false en caso contrario.
 	 */
-    public boolean verificarCertificadoExterno(String fichCertificadoCA, String fichCertificadoUsu)throws OperatorCreationException, CertException, FileNotFoundException, IOException {
+    public boolean verificarCertificadoExterno(String fichCertificadoCA, String fichCertificadoUsu)throws OperatorCreationException, 
+    																									  CertException, FileNotFoundException, 
+    																									  IOException {
 		
     	boolean certificadoVerificado = false;
     	boolean fechaVerificada = false;
@@ -128,28 +130,23 @@ public class Usuario {
         	System.out.println("Fecha no verificada");
         }
     	
-    	// Si la fecha es válida, se comprueba la firma
+    	// Si la fecha es valida, se comprueba la firma
     	if(fechaVerificada) {
     		//Leer fichCertificadoCA (certificado CA) 
             X509CertificateHolder certCA = (X509CertificateHolder) GestionObjetosPEM.leerObjetoPEM(fichCertificadoCA);
             GestionClaves gc = new GestionClaves();
             clavePublicaCA = gc.getClavePublicaMotor(certCA.getSubjectPublicKeyInfo());
             
-    		//Generar un contenedor para la verificación. 
+    		//Generar un contenedor para la verificacion. 
             DefaultDigestAlgorithmIdentifierFinder signer = new DefaultDigestAlgorithmIdentifierFinder();
             ContentVerifierProvider contentVerifierProvider = new BcRSAContentVerifierProviderBuilder(signer).build(clavePublicaCA);
             
     		//Verificar firma
             certificadoVerificado = certUsuario.isSignatureValid(contentVerifierProvider);
-            if(certificadoVerificado) {
-            	System.out.println("Certificado Verificado");
-            } else {
-            	System.out.println("Certificado No Verificado");
-            }
     	}
     
     	return certificadoVerificado;
 	}	
 }
 
-	// EL ESTUDIANTE PODRÁ CODIFICAR TANTOS MÉTODOS PRIVADOS COMO CONSIDERE INTERESANTE PARA UNA MEJOR ORGANIZACIÓN DEL CÓDIGO
+	
