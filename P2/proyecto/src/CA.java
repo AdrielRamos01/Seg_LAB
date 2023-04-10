@@ -119,19 +119,21 @@ public class CA {
 	 * @throws IOException 
 	 */
 	public void cargarClaves () throws IOException{
-                // Carga la pareja de claves de los ficheros indicados por NOMBRE_FICHERO_CLAVES 
-                // (añadiendo al nombre las cadenas "_pri.txt" y "_pu.txt")
+		// Carga la pareja de claves de los ficheros indicados por NOMBRE_FICHERO_CLAVES 
+        // (añadiendo al nombre las cadenas "_pri.txt" y "_pu.txt")
 		// No carga el certificado porque se lee de fichero cuando se necesita.
 		
 		GestionClaves gc = new GestionClaves(); // Clase con métodos para manejar las claves
 		//COMPLETAR POR EL ESTUDIANTE
 
+        SubjectPublicKeyInfo publicInfo = (SubjectPublicKeyInfo) GestionObjetosPEM.leerObjetoPEM(NOMBRE_FICHERO_CLAVES + "_pu.txt");
+        PrivateKeyInfo privateInfo = (PrivateKeyInfo) GestionObjetosPEM.leerObjetoPEM(NOMBRE_FICHERO_CLAVES + "_pri.txt");
 
-
+        clavePublicaCA = gc.getClavePublicaMotor(publicInfo);
+        clavePrivadaCA = gc.getClavePrivadaMotor(privateInfo);
 	}
 
 
-	
 	/**
 	 * Método que genera el certificado de un usuario a partir de una petición de certificación
 	 * @param ficheroPeticion:String. Parámetro con la petición de certificación
